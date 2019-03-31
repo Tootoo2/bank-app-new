@@ -10,36 +10,32 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="gp" alignment="center" hgap="10" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="658.0" prefWidth="1114.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.account.AccountController">
+<GridPane fx:id="gp" alignment="center" hgap="10" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="658.0" prefWidth="1114.0" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.account.AccountController">
    <children>
-      <BorderPane fx:id="bp" prefHeight="302.0" prefWidth="238.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
-         <left>
-            <ScrollPane prefHeight="12.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <BorderPane fx:id="bp" prefHeight="302.0" prefWidth="238.0" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+      <Button mnemonicParsing="false" onAction="#clickLoadTransactions" text="Senaste transaktioner" GridPane.rowIndex="4" />
+      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+         <children>
+            <Label prefHeight="41.0" prefWidth="205.0" text="Överföring annat konto" />
+         </children></HBox>
+      <Button fx:id="returnHome" mnemonicParsing="false" onAction="#backToHome" text="Tillbaka" GridPane.rowIndex="1" />
+      <Button fx:id="allTransactions" mnemonicParsing="false" onAction="#clickAllTransactions" prefHeight="31.0" prefWidth="164.0" text="Alla transaktioner" GridPane.rowIndex="3" />
+      <VBox prefHeight="302.0" prefWidth="249.0" GridPane.rowIndex="5">
+         <children>
+            <ScrollPane prefHeight="313.0" prefWidth="249.0">
                <content>
                   <VBox fx:id="transactionBox" maxHeight="600.0" prefHeight="302.0" prefWidth="200.0" />
                </content>
             </ScrollPane>
-         </left>
-      </BorderPane>
-      <VBox fx:id="choiceBox" prefHeight="9.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
-         <children>
-            <!--<Label prefHeight="21.0" prefWidth="33.0" text="Från" />-->
-            <!--&lt;!&ndash;<ChoiceBox fx:id="fromAccount" prefHeight="31.0" prefWidth="202.0" />&ndash;&gt;-->
-            <!--<Label text="Till" />-->
-            <!--&lt;!&ndash;<ChoiceBox fx:id="toAccount" prefHeight="31.0" prefWidth="222.0" />&ndash;&gt;-->
-            <!--<TextField fx:id="amount" alignment="CENTER" prefHeight="31.0" prefWidth="93.0" promptText="Summa" />-->
-            <!--<Button fx:id="executeTransaction" alignment="BASELINE_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#makeTransfer" text="Överför" />-->
-         </children>
-      </VBox>
-      <Button mnemonicParsing="false" onAction="#clickLoadTransactions" text="Senaste transaktioner" GridPane.rowIndex="4" />
-      <HBox prefHeight="100.0" prefWidth="200.0">
-         <children>
-            <Label fx:id="accountLabel" prefHeight="21.0" prefWidth="200.0" text="Label" />
-         </children></HBox>
-      <Button fx:id="returnHome" mnemonicParsing="false" onAction="#backToHome" text="Tillbaka" GridPane.rowIndex="2" />
-      <Button fx:id="allTransactions" mnemonicParsing="false" onAction="#clickAllTransactions" prefHeight="31.0" prefWidth="164.0" text="Alla transaktioner" GridPane.rowIndex="3" />
+         </children></VBox>
+      <Label fx:id="accountLabel" prefHeight="21.0" prefWidth="200.0" text="Label" />
+      <VBox fx:id="transferBox" prefHeight="30.0" prefWidth="205.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label prefHeight="21.0" prefWidth="209.0" text="Överföring eget konto" GridPane.columnIndex="3" />
+      <VBox fx:id="choiceBox" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+      <VBox fx:id="cardButtonBox" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="2" />
    </children>
    <columnConstraints>
+      <ColumnConstraints />
       <ColumnConstraints hgrow="NEVER" maxWidth="400.0" minWidth="-Infinity" />
       <ColumnConstraints maxWidth="0.0" minWidth="0.0" prefWidth="0.0" />
       <ColumnConstraints maxWidth="300.0" minWidth="0.0" prefWidth="200.0" />

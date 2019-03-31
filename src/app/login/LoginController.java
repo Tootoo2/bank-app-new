@@ -28,13 +28,11 @@ public class LoginController {
 
     @FXML
     private void initialize() {
-        System.out.println("initialize login");
     }
 
     @FXML
     void loadUser() {
         user = DB.getMatchingUser(userField.getText(), password.getText());
-        System.out.println(user.getName());
         if(user.getId()==0){
             System.out.println("Error");
         }

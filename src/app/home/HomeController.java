@@ -31,6 +31,8 @@ public class HomeController {
     @FXML
     VBox removeVbox;
     @FXML
+    VBox createBox;
+    @FXML
     private ChoiceBox<Account> cbRemoveAcc = new ChoiceBox<>();
     @FXML
     private ChoiceBox<Account> cbChangeName = new ChoiceBox<>();
@@ -44,7 +46,6 @@ public class HomeController {
         currentUser = LoginController.getUser();
         nameLabel.setText("Välkommen " + LoginController.getUser().getName());
         generateAccounts();
-        System.out.println("initialize home");
     }
 
     @FXML
@@ -56,10 +57,8 @@ public class HomeController {
             Button accountBtn = new Button("" + account.getAccountName());
             accountBtn.setMinSize(500, 40);
             accountsBox.getChildren().add(accountBtn);
-            System.out.println("generating accounts");
             accountBtn.setOnAction(event -> {
                 try {
-                    System.out.println("I'm inside the try of generate account");
                     goToAccount(account.getAccountNumber());
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -71,6 +70,7 @@ public class HomeController {
 
     @FXML
     private void clearAccounts() {
+        createBox.getChildren().clear();
         accountsBox.getChildren().clear();
         removeVbox.getChildren().clear();
         nameChangeBox.getChildren().clear();
@@ -116,24 +116,33 @@ public class HomeController {
             DB.changeAccountName(cbChangeName.getValue().getAccountName(), textField.getText(), currentUser.getSocialNumber());
             clearAccounts();
         });
+        fillCreateAccount();
     }
 
     @FXML
-    void createAccount() {
-        boolean nameExists = false;
-        userAccounts = (List<Account>) DB.getAccounts(currentUser.getSocialNumber());
-        for (Account account : userAccounts) {
-            if (account.getAccountName().equals(accountName.getText())) {
-                System.out.println("Name Exists");
-                nameExists = true;
+    private void fillCreateAccount(){
+        Label label=new Label("Skapa nytt sparkonto");
+        TextField accountName=new TextField("Namn på konto");
+        Button button= new Button("Skapa konto");
+        createBox.getChildren().add(label);
+        createBox.getChildren().add(accountName);
+        createBox.getChildren().add(button);
+        button.setOnAction(event ->{
+            boolean nameExists = false;
+            userAccounts = (List<Account>) DB.getAccounts(currentUser.getSocialNumber());
+            for (Account account : userAccounts) {
+                if (account.getAccountName().equals(accountName.getText())) {
+                    System.out.println("Name Exists");
+                    nameExists = true;
+                }
             }
-        }
-        if (!nameExists) {
-            DB.createAccount(accountName.getText(), currentUser.getSocialNumber());
-        }
-        clearAccounts();
-    }
+            if (!nameExists) {
+                DB.createAccount(accountName.getText(), currentUser.getSocialNumber());
+            }
+            clearAccounts();
+        });
 
+    }
 
     @FXML
     void goToAccount(long number) throws IOException {

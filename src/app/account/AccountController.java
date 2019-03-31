@@ -31,25 +31,32 @@ public class AccountController {
     BorderPane bp;
     @FXML
     VBox choiceBox;
+    @FXML
+    VBox transferBox;
     private Account currentAccount = null;
     @FXML
     private ChoiceBox<Account> fromAccount = new ChoiceBox<>();
     @FXML
     private ChoiceBox<Account> toAccount = new ChoiceBox<>();
     @FXML
+    private ChoiceBox<Account> myAccounts = new ChoiceBox<>();
+    @FXML
     private TextField amount;
     @FXML
     private Label accountLabel;
-
+    @FXML
+    VBox cardButtonBox;
+    @FXML
+    TextField reciver;
+    @FXML
+    TextField amountToSend;
 
     public void setAccount(Account account) {
         currentAccount = account;
-        System.out.println("setting account");
     }
 
     @FXML
     private void initialize() {
-        System.out.println("initialize account");
         Platform.runLater(this::showLabel);
     }
 
@@ -57,7 +64,7 @@ public class AccountController {
     void showPayWithCard() {
         if (currentAccount.getAccountType().equals("Card Account")) {
             Button button = new Button("Kortköp");
-            choiceBox.getChildren().add(button);
+            cardButtonBox.getChildren().add(button);
             button.setOnAction(event -> {
                 payWithCard();
             });
@@ -70,10 +77,9 @@ public class AccountController {
         transactionBox.getChildren().clear();
         List<Transaction> transactions = DB.getTransactions(currentAccount.getAccountNumber());
         displayTenTransactions(transactions);
-        System.out.println(transactions.size());
     }
 
-    void loadAllTransactions(){
+    void loadAllTransactions() {
         transactionBox.getChildren().clear();
         List<Transaction> transactions = DB.getTransactions(currentAccount.getAccountNumber());
         displayAllTransactions(transactions);
@@ -81,22 +87,22 @@ public class AccountController {
 
     void displayTenTransactions(List<Transaction> transactions) {
         // For every transactcontroller.setTransaction(transacgtions);ion, do the followin:
-      //  for (Transaction transaction : transactions)
-            for (int i=0; i<10; i++)
+        //  for (Transaction transaction : transactions)
+        for (int i = 0; i < 10; i++)
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/transaction/transaction.fxml"));
                 Parent fxmlInstance = loader.load();
                 Scene scene = new Scene(fxmlInstance);
                 TransactionController controller = loader.getController();
-                controller.setTransaction(transactions.get(transactions.size()-(i+1)));
+                controller.setTransaction(transactions.get(transactions.size() - (i + 1)));
                 transactionBox.getChildren().add(scene.getRoot());
             } catch (IOException e) {
                 e.printStackTrace();
             }
     }
 
-    void displayAllTransactions(List<Transaction> transactions){
-        for (Transaction transaction: transactions){
+    void displayAllTransactions(List<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/transaction/transaction.fxml"));
                 Parent fxmlInstance = loader.load();
@@ -111,8 +117,6 @@ public class AccountController {
     }
 
 
-
-
     @FXML
     void backToHome() {
         try {
@@ -123,6 +127,30 @@ public class AccountController {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+    }
+
+    @FXML
+    private void fillTransferOtherAccount() {
+        List<Account> results = null;
+        myAccounts.getItems().clear();
+        results = DB.getAccounts(LoginController.getUser().getSocialNumber());
+        results.forEach(account -> {
+            myAccounts.getItems().add(account);
+        });
+        Label from = new Label("Från");
+        Label to = new Label("Till");
+        transferBox.getChildren().add(from);
+        transferBox.getChildren().add(myAccounts);
+        transferBox.getChildren().add(to);
+        reciver = new TextField("Mottagare");
+        transferBox.getChildren().add(reciver);
+        amountToSend = new TextField("Summa");
+        Button button = new Button("Överför");
+        transferBox.getChildren().add(amountToSend);
+        transferBox.getChildren().add(button);
+        button.setOnAction(event -> {
+            makeTransferOtherAccount();
+        });
     }
 
     @FXML
@@ -148,33 +176,31 @@ public class AccountController {
         button.setOnAction(event -> {
             makeTransfer();
         });
-
-//        for (Account result : results) {
-//            fromAccount.getItems().add(result);
-//            toAccount.getItems().add(result);
-//        }
-//        System.out.println("hello im inside fillCBwithAccounts");
+        fillTransferOtherAccount();
     }
+
     @FXML
-    private void showLabel(){
-        accountLabel.setText("Konto: "+currentAccount.getAccountName());
+    private void showLabel() {
+        accountLabel.setText("Konto: " + currentAccount.getAccountName());
         showPayWithCard();
     }
 
     @FXML
     private void clearCB() {
+        cardButtonBox.getChildren().clear();
         choiceBox.getChildren().clear();
-        fillCBwithAccounts();
+        transferBox.getChildren().clear();
+        initialize();
     }
 
 
     @FXML
     private void makeTransfer() {
-        System.out.println("inside makeTransfer");
         String stringAmount = amount.getText();
+        String message = "Transfer Own Account";
         float f = Float.parseFloat(stringAmount);
         if (checkAccountBalance(f)) {
-            DB.transferOwnAccount(fromAccount.getValue().getAccountNumber(), toAccount.getValue().getAccountNumber(), f);
+            DB.transferMoney(fromAccount.getValue().getAccountNumber(), toAccount.getValue().getAccountNumber(), f, message);
         } else {
             System.out.println("Not enough money");
         }
@@ -182,10 +208,25 @@ public class AccountController {
     }
 
     @FXML
+    private void makeTransferOtherAccount() {
+        String message = "Transfer Other Account";
+        String stringAmount = amountToSend.getText();
+        float f = Float.parseFloat(stringAmount);
+        String reciverText = reciver.getText();
+        long l = Long.parseLong(reciverText);
+        if (checkAccountBalanceOtherAccount(f)) {
+            DB.transferMoney(myAccounts.getValue().getAccountNumber(), l, f, message);
+        } else {
+            System.out.println("Not enough money");
+        }
+        clearCB();
+    }
+
+
+    @FXML
     void payWithCard() {
         float snusPrice = 32f;
         if (currentAccount.getAccountBalance() > snusPrice) {
-            System.out.println(currentAccount.getAccountBalance() + " inside payWithCard");
             DB.makeCardPayment(currentAccount.getAccountNumber());
         } else {
             System.out.println("Error");
@@ -195,7 +236,10 @@ public class AccountController {
 
     private boolean checkAccountBalance(float amountToSend) {
         return (fromAccount.getValue().getAccountBalance() >= amountToSend);
+    }
 
+    private boolean checkAccountBalanceOtherAccount(float amountToSend) {
+        return (myAccounts.getValue().getAccountBalance() >= amountToSend);
     }
 
     @FXML
@@ -204,7 +248,7 @@ public class AccountController {
     }
 
     @FXML
-    void clickAllTransactions(Event e){
+    void clickAllTransactions(Event e) {
         loadAllTransactions();
     }
 }

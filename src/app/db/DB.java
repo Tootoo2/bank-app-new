@@ -32,7 +32,7 @@ public abstract class DB {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result; // return User;
+        return result;
     }
 
     public static List<Account> getAccounts(String socialNumber) {
@@ -85,7 +85,6 @@ public abstract class DB {
             cs.setLong(2, sender);
             cs.setLong(3, receiver);
             cs.setFloat(4, amount);
-            System.out.println("this should be right");
             cs.execute();
             cs.close();
         } catch (Exception e) {
@@ -108,16 +107,14 @@ public abstract class DB {
         }
     }
 
-    public static void transferOwnAccount(long sender, long receiver, float amount) {
+    public static void transferMoney(long sender, long receiver, float amount, String message) {
         String SQLQuery = "{ CALL make_transaction(?,?,?,?) }";
-        String message = "Transfer Own Account";
         CallableStatement cs = call(SQLQuery);
         try {
             cs.setString(1, message);
             cs.setLong(2, sender);
             cs.setLong(3, receiver);
             cs.setFloat(4, amount);
-            System.out.println("this should be alright");
             cs.execute();
             cs.close();
         } catch (Exception e) {
@@ -151,22 +148,6 @@ public abstract class DB {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result; // return User;
+        return result;
     }
-
-    /*
-        Example method with default parameters
-    public static List<Transaction> getTransactions(int accountId){ return getTransactions(accountId, 0, 10); }
-    public static List<Transaction> getTransactions(int accountId, int offset){ return getTransactions(accountId, offset, offset + 10); }
-    public static List<Transaction> getTransactions(int accountId, int offset, int limit){
-        List<Transaction> result = null;
-        PreparedStatement ps = prep("bla bla from transactions WHERE account-id = "+accountId+" OFFSET "+offset+" LIMIT "+limit);
-        try {
-            result = (List<Transaction>)new ObjectMapper<>(Transaction.class).map(ps.executeQuery());
-        } catch (Exception e) { e.printStackTrace(); }
-        return result; // return User;
-    }
-    */
-
-
 }
