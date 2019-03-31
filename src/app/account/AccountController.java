@@ -86,14 +86,13 @@ public class AccountController {
     }
 
     void displayTenTransactions(List<Transaction> transactions) {
-        // For every transactcontroller.setTransaction(transacgtions);ion, do the followin:
-        //  for (Transaction transaction : transactions)
         for (int i = 0; i < 10; i++)
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/transaction/transaction.fxml"));
                 Parent fxmlInstance = loader.load();
                 Scene scene = new Scene(fxmlInstance);
                 TransactionController controller = loader.getController();
+                controller.setCurrentAccount(currentAccount);
                 controller.setTransaction(transactions.get(transactions.size() - (i + 1)));
                 transactionBox.getChildren().add(scene.getRoot());
             } catch (IOException e) {
@@ -108,6 +107,7 @@ public class AccountController {
                 Parent fxmlInstance = loader.load();
                 Scene scene = new Scene(fxmlInstance);
                 TransactionController controller = loader.getController();
+                controller.setCurrentAccount(currentAccount);
                 controller.setTransaction(transaction);
                 transactionBox.getChildren().add(scene.getRoot());
             } catch (IOException e) {
